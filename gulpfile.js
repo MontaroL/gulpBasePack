@@ -43,7 +43,7 @@ function html() {
 }
 
 function styles() {
-    return src('source/scss/**/*.scss')
+    return src(['source/scss/**/*.scss', 'node_modules/normalize.css/normalize.css'])
         .pipe(scss({
             outputStyle: 'compressed',
             onError: browserSync.notify
