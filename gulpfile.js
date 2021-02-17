@@ -1,39 +1,31 @@
-const {src, watch, series, dest} = require ('gulp');
+/*----------------------------------------------------------------------------*/
 
+//General
+
+const {src, watch, series, dest} = require ('gulp');
 const browserSync = require ('browser-sync').create();
+const del = require ('del');
+
+// Basics
 
 const pug = require ('gulp-pug');
 const scss = require ('gulp-sass');
 const babel = require ('gulp-babel');
+
+// Extensions
+
+const groupMedia = require ('gulp-group-css-media-queries');
+const autoprefixer = require ('gulp-autoprefixer');
+const concat = require ('gulp-concat');
+
+//Compressors
+
+const imagemin = require ('gulp-imagemin');
 const terser = require ('gulp-terser');
 
-const autoprefixer = require ('gulp-autoprefixer');
-const imagemin = require ('gulp-imagemin');
-const concat = require ('gulp-concat');
-const del = require ('del');
+/*----------------------------------------------------------------------------*/
 
-function build() {
-    src([
-        'source/*.html',
-        'source/css/style.min.css',
-        'source/js/main.min.js',
-        'source/fonts/**/*',
-        'source/videos/**/*'
-    ], {base: 'source'})
-        .pipe(dest('build'))
-}
-
-
-function sWatch() {
-    browserSync.init({
-        server: 'source',
-    });
-    watch('source/*.html').on('change', browserSync.reload);
-
-    watch('source/pug/**/*.pug', html);
-    watch('source/scss/**/*.scss', styles);
-    watch(['source/js/**/*.js', '!source/js/main.min.js'], uglify);
-}
+// Development
 
 function html() {
     return src('source/pug/index.pug')
@@ -53,6 +45,7 @@ function styles() {
             cascade: false,
             grid: true
         }))
+        .pipe(groupMedia())
         .pipe(dest('source/css'))
         .pipe(browserSync.stream());
 }
@@ -68,21 +61,46 @@ function uglify() {
         .pipe(browserSync.stream());
 }
 
+function sWatch() {
+    browserSync.init({
+        server: 'source',
+    });
+    watch('source/*.html').on('change', browserSync.reload);
+    watch('source/pug/**/*.pug', html);
+    watch('source/scss/**/*.scss', styles);
+    watch(['source/js/**/*.js', '!source/js/main.min.js'], uglify);
+}
+
+exports.dev = sWatch;
+
+/*----------------------------------------------------------------------------*/
+
+// Build
+
+function clear() {
+    return del('build')
+}
+
+function build() {
+    src([
+        'source/*.html',
+        'source/css/style.min.css',
+        'source/js/main.min.js',
+        'source/fonts/**/*',
+        'source/videos/**/*'
+    ], {base: 'source'})
+        .pipe(dest('build'))
+}
+
 function imgmin() {
     return src('source/images/**/*', {base: 'source'})
         .pipe(imagemin())
         .pipe(dest('build/images'))
 }
 
-function clear() {
-    return del('build')
-}
-
-
-exports.dev = sWatch;
 exports.build = series (clear, build, imgmin);
 
-
+/*----------------------------------------------------------------------------*/
 
 
 
