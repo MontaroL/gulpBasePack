@@ -14,9 +14,10 @@ const babel = require ('gulp-babel');
 
 // Extensions
 
+const concat = require ('gulp-concat');
 const groupMedia = require ('gulp-group-css-media-queries');
 const autoprefixer = require ('gulp-autoprefixer');
-const concat = require ('gulp-concat');
+const cleanCSS = require('gulp-clean-css');
 
 //Compressors
 
@@ -37,7 +38,6 @@ function html() {
 function styles() {
     return src(['node_modules/normalize.css/normalize.css', 'source/scss/**/*.scss'])
         .pipe(scss({
-            outputStyle: 'compressed',
             onError: browserSync.notify
         }))
         .pipe(concat('style.min.css'))
@@ -46,6 +46,7 @@ function styles() {
             grid: true
         }))
         .pipe(groupMedia())
+        .pipe(cleanCSS())
         .pipe(dest('source/css'))
         .pipe(browserSync.stream());
 }
@@ -101,8 +102,6 @@ function imgmin() {
 exports.build = series (clear, build, imgmin);
 
 /*----------------------------------------------------------------------------*/
-
-
 
 
 
