@@ -1,41 +1,39 @@
-/*----------------------------------------------------------------------------*/
-
-//General
+// General Deps
 
 const {src, watch, series, dest} = require ('gulp');
 const browserSync = require ('browser-sync').create();
 const del = require ('del');
 
-// Basics
+// Compiler Deps
 
 const pug = require ('gulp-pug');
 const scss = require ('gulp-sass');
 const babel = require ('gulp-babel');
 
-// Extensions
+// Extension Deps
 
 const concat = require ('gulp-concat');
 const groupMedia = require ('gulp-group-css-media-queries');
 const autoprefixer = require ('gulp-autoprefixer');
 const cleanCSS = require('gulp-clean-css');
 
-//Compressors
+// Compressing Deps
 
 const imagemin = require ('gulp-imagemin');
 const terser = require ('gulp-terser');
 
 /*----------------------------------------------------------------------------*/
 
-// Development
+// Dev.
 
-function html() {
+const html = () => {
     return src('source/pug/index.pug')
         .pipe(pug())
         .pipe(concat('index.html'))
         .pipe(dest('source/'))
 }
 
-function styles() {
+const styles = () => {
     return src(['node_modules/normalize.css/normalize.css', 'source/scss/**/*.scss'])
         .pipe(scss({
             onError: browserSync.notify
@@ -51,7 +49,7 @@ function styles() {
         .pipe(browserSync.stream());
 }
 
-function uglify() {
+const uglify = () => {
     return src(['source/js/**/*.js','!source/js/main.min.js'])
         .pipe(concat('main.min.js'))
         .pipe(babel({
@@ -62,7 +60,7 @@ function uglify() {
         .pipe(browserSync.stream());
 }
 
-function sWatch() {
+const sWatch = () => {
     browserSync.init({
         server: 'source',
     });
@@ -78,11 +76,11 @@ exports.dev = sWatch;
 
 // Build
 
-function clear() {
+const clear = () => {
     return del('build')
 }
 
-function build() {
+const build = () => {
     src([
         'source/*.html',
         'source/css/style.min.css',
@@ -93,15 +91,13 @@ function build() {
         .pipe(dest('build'))
 }
 
-function imgmin() {
+const imgmin = () => {
     return src('source/images/**/*', {base: 'source'})
         .pipe(imagemin())
         .pipe(dest('build/images'))
 }
 
 exports.build = series (clear, build, imgmin);
-
-/*----------------------------------------------------------------------------*/
 
 
 
