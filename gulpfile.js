@@ -80,7 +80,7 @@ const clear = () => {
     return del('build')
 }
 
-const build = () => {
+const build = (building) => {
     src([
         'source/*.html',
         'source/css/style.min.css',
@@ -89,6 +89,7 @@ const build = () => {
         'source/videos/**/*'
     ], {base: 'source'})
         .pipe(dest('build'))
+    building()
 }
 
 const imgmin = () => {
